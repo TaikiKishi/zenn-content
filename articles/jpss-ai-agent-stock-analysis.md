@@ -7,6 +7,7 @@ topics: ["python", "ai", "claudecode", "stock", "automation"]
 published: false
 status: "ready"
 created_at: "2026-03-23"
+scheduled_publish_date: "2026-03-24"
 ---
 
 ## この記事でわかること
