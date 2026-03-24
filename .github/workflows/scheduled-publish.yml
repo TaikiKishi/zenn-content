@@ -28,7 +28,7 @@ jobs:
             [ -z "$sched" ] && continue
 
             # published: false であることを確認
-            is_draft=$(grep -m1 '^published:' "$file" | grep -c 'false')
+            is_draft=$(grep -m1 '^published:' "$file" | grep -c 'false' || true)
             [ "$is_draft" -eq 0 ] && continue
 
             # 日付比較（予定日 <= 今日なら公開）
