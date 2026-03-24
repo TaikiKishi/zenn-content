@@ -4,7 +4,7 @@ slug: "jpss-adr-019-jquants-data-expansion"
 emoji: "🔍"
 type: "tech"
 topics: ["python", "claudecode", "ai", "automation", "architecture"]
-published: false
+published: true
 status: "ready"
 created_at: "2026-03-25"
 ---
