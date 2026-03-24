@@ -32,7 +32,7 @@ jobs:
             [ "$is_draft" -eq 0 ] && continue
 
             # 日付比較（予定日 <= 今日なら公開）
-            if [ "$sched" \<= "$today" ]; then
+            if [[ "$sched" < "$today" || "$sched" == "$today" ]]; then
               echo "Publishing: $file (scheduled: $sched)"
               sed -i 's/^published: false/published: true/' "$file"
               changed=true
