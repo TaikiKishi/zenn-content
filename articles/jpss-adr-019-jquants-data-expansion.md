@@ -1,11 +1,13 @@
 ---
-title: "「実装済み」のはずが全銘柄None — AIエージェントが日次運用で自分のバグに気づくまで"
+title: "「実装済み」のはずが全銘柄None — AIエージェントが日次運用で自分のバグに気づくまで【日本株スイングトレードAI】"
 slug: "jpss-adr-019-jquants-data-expansion"
 emoji: "🔍"
 type: "tech"
 topics: ["python", "claudecode", "ai", "automation", "architecture"]
-published: true
-status: "ready"
+published: false
+status: "published"
+published_url: "https://zenn.dev/taiki_kishi/articles/jpss-adr-019-jquants-data-expansion"
+published_at: "2026-03-25T03:33:24"
 created_at: "2026-03-25"
 ---
 
@@ -17,6 +19,8 @@ created_at: "2026-03-25"
 - IFRS採用企業でYoY計算が根本的に不可能になるデータ制約
 
 ---
+
+> Claude Codeで日本株スイングトレードの自動分析システムを作っています。毎日約4,000銘柄をスコアリングし、AIエージェントが売買候補を推奨→人間が承認するパイプラインです。本記事はその日次運用で見つかったバグの記録です。[シリーズ一覧はこちら](https://zenn.dev/taiki_kishi)
 
 ## 発端 — AIの記事提案から始まった
 
