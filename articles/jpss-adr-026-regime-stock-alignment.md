@@ -1,5 +1,5 @@
 ---
-title: "4,000銘柄のスクリーニングデータからAIに市場レジームを判断させる"
+title: "4,000銘柄のスクリーニングデータからAIに市場レジームを判断させる【日本株スイングトレードAI】"
 emoji: "🌡️"
 type: "tech"
 topics: ["python", "ai", "claudecode", "quantitative", "jquants"]
@@ -7,6 +7,8 @@ published: false
 status: "ready"
 created_at: "2026-03-26"
 ---
+
+> Claude Codeで日本株スイングトレードの自動分析システムを作っています。毎日約4,000銘柄をスコアリングし、AIエージェントが売買候補を推奨→人間が承認するパイプラインです。本記事ではそのパイプラインに「市場全体の環境判定（レジーム）」を組み込んだ設計を解説します。[シリーズ一覧はこちら](https://zenn.dev/taiki_kishi)
 
 ## この記事でわかること
 
