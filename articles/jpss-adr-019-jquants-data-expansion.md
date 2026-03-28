@@ -7,7 +7,7 @@ topics: ["python", "claudecode", "ai", "automation", "architecture"]
 published: false
 status: "published"
 published_url: "https://zenn.dev/taiki_kishi/articles/jpss-adr-019-jquants-data-expansion"
-published_at: "2026-03-25T03:33:24"
+published_at: "2026-03-25 03:33"
 created_at: "2026-03-25"
 ---
 
