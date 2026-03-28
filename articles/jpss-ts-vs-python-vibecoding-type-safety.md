@@ -1,6 +1,5 @@
 ---
 title: "【日本株スイングトレードAI】TypeErrorで止まった朝に考えた ── AI時代の言語選択とOODAループ"
-slug: "jpss-ts-vs-python-vibecoding-type-safety"
 emoji: "🔧"
 type: "tech"
 topics: ["python", "typescript", "claudecode", "ai", "automation"]
