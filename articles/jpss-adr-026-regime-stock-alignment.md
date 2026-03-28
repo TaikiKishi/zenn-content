@@ -4,6 +4,7 @@ emoji: "🌡️"
 type: "tech"
 topics: ["python", "ai", "claudecode", "quantitative", "jquants"]
 published: false
+scheduled_publish_date: "2026-03-29"
 status: "ready"
 created_at: "2026-03-26"
 ---
@@ -253,7 +254,7 @@ flowchart TD
 
 ## 実データで見る: 3/16〜3/25のレジーム推移
 
-実際のパイプラインが出力したレジームの時系列です:
+このレジーム判定結果は、筆者のX（[@quant_swing_jp](https://x.com/quant_swing_jp)）で毎日報告しています。「今日の市場環境はbull/bear/neutral/volatileのどれか」「確信度は何%か」「ブレッドスの数値はどうか」を、パイプラインの出力そのままで公開しています。以下はその蓄積データの一部です:
 
 | 日付 | レジーム | 確信度 | SMA25上回り | RSI50超え | A/D比 | L乗数 | S乗数 |
 |------|---------|--------|-----------|---------|-------|-------|-------|
