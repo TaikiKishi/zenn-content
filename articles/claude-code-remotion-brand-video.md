@@ -4,7 +4,7 @@ slug: "claude-code-remotion-brand-video"
 emoji: "🎬"
 type: "tech"
 topics: ["remotion", "claudecode", "typescript", "react", "googlefonts"]
-published: false
+published: true
 status: "ready"
 created_at: "2026-04-19"
 pair_note_slug: "claude-design-vs-claude-code-brand-video"
