@@ -1,5 +1,5 @@
 ---
-title: "【日本株スイングトレードAI】Claude Code × Remotion でブランド動画を作る — 配置規約・delayRender 罠・5シーン構成"
+title: "【日本株スイングトレードAI】Claude Code × Remotion でブランド動画を作る"
 slug: "claude-code-remotion-brand-video"
 emoji: "🎬"
 type: "tech"
