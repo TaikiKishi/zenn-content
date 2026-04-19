@@ -1,5 +1,5 @@
 ---
-title: "【日本株スイングトレードAI】Claude Code × Remotion でブランド動画を作る — _meta 横断規約・delayRender 罠・5シーン構成"
+title: "【日本株スイングトレードAI】Claude Code × Remotion でブランド動画を作る — 配置規約・delayRender 罠・5シーン構成"
 slug: "claude-code-remotion-brand-video"
 emoji: "🎬"
 type: "tech"
@@ -14,7 +14,7 @@ sketch_ref: "content/sketches/claude-design-vs-claude-code-brand-video.md"
 ## この記事でわかること
 
 - Claude Code に Remotion を組み込んで、X 固定ツイート用の 30 秒ブランド動画を作る具体手順
-- 動画プロジェクトをソースリポと物理分離するための `_meta/setup/remotion-video-projects.md` 横断規約の設計
+- 動画プロジェクトをソースリポと物理分離するための「配置規約ドキュメント」の設計
 - `Series` + `Series.Sequence` で 5 シーンを「frame 0 から始まる独立シーン」として合成するパターン
 - Remotion で日本語フォントを正しく出すための `delayRender` + `waitUntilDone` + `loadFont().fontFamily` の三点セット
 - WSL の `Noto Sans CJK JP` フォールバック罠と、`npx remotion still` を「ユニットテスト」として使うデバッグ術
@@ -22,7 +22,7 @@ sketch_ref: "content/sketches/claude-design-vs-claude-code-brand-video.md"
 
 ---
 
-> 本記事は「Quant Swing」というアカウント（リポ名: `jp-stock-swing-signals`）の自作 AI システムの一部、ブランディング系成果物の制作記録です。Quant Swing は日本株約 4,300 銘柄を毎日スコアリングし、Claude Code の 16 エージェントが「推奨 → 人間承認 → 振り返り → 改善」の OODA ループを回す実験的システムです。本記事は実装メモであり、システムの投資成績や有効性を保証するものではありません。
+> 本記事は、筆者が運用している日本株スイングトレードの AI システム（X アカウント「Quant Swing」）で使う X 固定ツイート用ブランドイントロ動画の制作記録です。システムの中身ではなく、**Remotion を既存プロジェクトに組み込むときの配置設計と実装上の罠**がメインテーマです。本記事は実装メモであり、システムの投資成績や有効性を保証するものではありません。
 
 ---
 
@@ -42,21 +42,21 @@ https://note.com/quant_swing_jp/n/n64101be1bec3
 
 - **ゴール**: X 固定ツイートに置く 30 秒のブランドイントロ動画 (1080×1080, 30fps, mp4)
 - **制約**:
-  - ブランドカラーは既存の `app/static/css/base.css` のトークンと完全一致させる
+  - ブランドカラーは本体プロジェクト側の CSS トークン (`base.css`) と完全一致させる
   - 日本語フォント (Noto Sans JP) が正しく表示される
-  - ソースリポ (`jp-stock-swing-signals`) には Remotion を入れない（後述の理由）
-- **使うもの**: Claude Code + Remotion + `@remotion/google-fonts` + `_meta/setup/remotion-video-projects.md` という横断規約
+  - Python メインのソースリポには Remotion（Node 依存）を入れない（後述の理由）
+- **使うもの**: Claude Code + Remotion + `@remotion/google-fonts` + 配置規約ドキュメント（複数リポ横断のドキュメント置き場に設置）
 
-## 1. 横断規約: `_meta/setup/remotion-video-projects.md` を最初に書く
+## 1. 配置規約を最初に書く
 
-実装に入る前に、配置規約を `_meta`（複数リポ横断のドキュメント置き場）に切り出しました。
+実装に入る前に、配置規約を**別リポのドキュメント置き場**（筆者は複数リポ横断で使い回すドキュメントを `_meta` という別リポに切り出しています）に残しました。同じ役割を果たせる場所なら Notion でも何でも構いません。大事なのは「ソースリポの内部には置かない」ことです。
 
 ### なぜソースリポに入れないのか
 
 ```
-D:\Projects\<repo-name>\               ← ソースリポ
-D:\Movie\<source-repo-name>\<video-name>\  ← 動画プロジェクト
-D:\Movie\<source-repo-name>\<video-name>\out\  ← 最終 mp4
+~/projects/<source-repo>/            ← アプリ本体のソースリポ
+~/videos/<source-repo>/<video-name>/  ← 動画プロジェクト（別ディレクトリ）
+~/videos/<source-repo>/<video-name>/out/  ← 最終 mp4
 ```
 
 理由は 3 つです。
@@ -71,16 +71,16 @@ D:\Movie\<source-repo-name>\<video-name>\out\  ← 最終 mp4
 ## 配置ルール
 | 種類 | 場所 |
 |------|------|
-| ソースリポ（コード） | `D:\Projects\<repo-name>\` |
-| 動画プロジェクト | `D:\Movie\<source-repo-name>\<video-name>\` |
-| 最終レンダリング（mp4） | `D:\Movie\<source-repo-name>\<video-name>\out\` |
+| ソースリポ（コード） | `~/projects/<source-repo>/` |
+| 動画プロジェクト | `~/videos/<source-repo>/<video-name>/` |
+| 最終レンダリング（mp4） | `~/videos/<source-repo>/<video-name>/out/` |
 
-- Git 管理しない: `D:\Movie` 配下はローカル専用
+- Git 管理しない: `~/videos/` 配下はローカル専用
 - 命名: `<video-name>` は kebab-case、用途が一目で分かる名前
 - 1 video = 1 project
 ```
 
-「最初の 1 件で規約を書く」のは退屈ですが、2 本目以降の動画（週次レビュー、ADR 解説）で同じパターンを再利用できるので、トータルでは時間の節約になります。
+「最初の 1 件で規約を書く」のは退屈ですが、2 本目以降の動画（週次レビュー、ADR 解説など）で同じパターンを再利用できるので、トータルでは時間の節約になります。
 
 ## 2. Claude Code への Remotion 組み込み（ユーザースコープ）
 
@@ -108,12 +108,12 @@ ls ~/.claude/skills/remotion/
 
 ```bash
 # 親フォルダ作成（初回のみ）
-mkdir -p ~/videos/jp-stock-swing-signals
-cd ~/videos/jp-stock-swing-signals
+mkdir -p ~/videos/<source-repo>
+cd ~/videos/<source-repo>
 
 # Remotion プロジェクト作成
-npx create-video@latest --yes --blank --no-tailwind x-pinned-brand-intro
-cd x-pinned-brand-intro
+npx create-video@latest --yes --blank --no-tailwind <video-name>
+cd <video-name>
 ```
 
 `--blank` を選んだ理由: テンプレが入ると、不要な `Composition` や placeholder 素材を削除する手間の方が、ゼロから書く時間より大きくなります。最小構成から 5 シーンを書き起こす方が早い。
@@ -159,17 +159,19 @@ export const BrandIntroComposition: React.FC = () => {
 
 これが地味に効きます。シーン単独でプレビューしたいときも、`Series.Sequence` でラップする側だけを変えれば、シーン本体は触らなくていい。
 
-シーン構成:
+シーン構成（今回の例）:
 
 | シーン | 時間 | frames | 内容 |
 |--------|------|--------|------|
-| IntroScene | 0-4s | 120 | "Quant Swing" ワードマーク + サブタイトル + teal アンダーライン sweep |
-| StatsScene | 4-12s | 240 | 4,300+ 銘柄/日, 30+ 指標, 16 エージェント を 1 つずつカウントアップ |
-| LoopScene | 12-20s | 240 | OODA Loop 4 フェーズを回転する teal pointer で示す |
-| SemanticsScene | 20-26s | 180 | 「買い」(teal) + 「売り」(orange) を fontWeight 900 で大きく |
-| OutroScene | 26-30s | 120 | @quant_swing_jp + "Built with Claude Code" バッジ |
+| IntroScene | 0-4s | 120 | ブランドワードマーク + サブタイトル + アクセントカラーのアンダーライン sweep |
+| StatsScene | 4-12s | 240 | システムを象徴する 3 つの定量指標を 1 つずつカウントアップ |
+| LoopScene | 12-20s | 240 | OODA Loop 4 フェーズを回転する pointer で示す |
+| SemanticsScene | 20-26s | 180 | 毎日のリズム（媒体と時間帯）を 3 行で提示 |
+| OutroScene | 26-30s | 120 | ブランドハンドル + "Built with Claude Code" バッジ |
 
 合計 900 frames @ 30fps = 30 秒。
+
+シーン名とレイアウトは用途に合わせて差し替えてください。重要なのは、**各シーンを `Series.Sequence` でラップすると時間オフセットを気にせず独立に書ける** という点です。
 
 ## 5. デザイントークンの TS 化: `src/tokens.ts`
 
@@ -203,7 +205,7 @@ export const radii = {
 } as const;
 ```
 
-参照元の真実は `app/static/css/base.css`（Quant Swing 本体）です。ここを更新したら `tokens.ts` も合わせて更新するだけ。CSS と TS で書き方は違いますが、**値の Single Source of Truth は base.css 側** という運用にすると、ブランドの一貫性が保てます。
+参照元の真実は**本体プロジェクト側の `base.css`** です（筆者の場合 `app/static/css/base.css`）。ここを更新したら `tokens.ts` も合わせて更新するだけ。CSS と TS で書き方は違いますが、**値の Single Source of Truth は本体の base.css 側** という運用にすると、ブランドの一貫性が保てます。
 
 ## 6. フォントの罠: `Noto Sans JP` ≠ `Noto Sans CJK JP`
 
@@ -356,11 +358,11 @@ Claude Design は、リポを読み込ませて専用デザインシステムを
 
 ## まとめ: 今回の設計判断 7 点
 
-1. **配置規約を最初に書く**: `_meta/setup/remotion-video-projects.md` で `D:\Movie\<source-repo-name>\<video-name>\` を確定
+1. **配置規約を最初に書く**: 別リポのドキュメント置き場に `~/videos/<source-repo>/<video-name>/` という配置ルールを残す
 2. **Skill + MCP はユーザースコープ**: 全リポで Remotion を使う前提
 3. **`--blank --no-tailwind`**: テンプレ削除より、ゼロから書く方が速い
 4. **`Series` + `Series.Sequence`**: 各シーンが「frame 0 開始」になる効率的な合成
-5. **トークンを TS 化**: `app/static/css/base.css` を Single Source of Truth とする
+5. **トークンを TS 化**: 本体プロジェクトの `base.css` を Single Source of Truth とする
 6. **フォントは `loadFont().fontFamily` を export**: ハードコード文字列禁止 + `delayRender` + `waitUntilDone` の三点セット
 7. **`still` コマンド = ユニットテスト**: 動画書き出しの 30 倍速いデバッグ
 
